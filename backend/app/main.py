@@ -13,7 +13,7 @@ app.add_middleware(
 
 names = ["BamBam", "Ball", "Guide"]
 
-@app.get("/")
+@app.get("/names")
 def read_api():
     return {'names': names}
 
