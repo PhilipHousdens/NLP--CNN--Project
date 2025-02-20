@@ -4,7 +4,7 @@ import HomePage from './components/HomePage.vue'
 
 <template>
   <div class="">
-    <HomePage class="text-red-500"/>
+    <HomePage class=""/>
   </div>
 </template>
 
