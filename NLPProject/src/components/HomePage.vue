@@ -7,22 +7,28 @@ const summary = ref(''); // Variable to store the summarized text
 // Function to handle the form submission
 const getSummary = async () => {
   try {
-    // Send the user input text to the backend for summarization
     const response = await fetch('http://127.0.0.1:8000/summarize/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text: inputText.value }),
+      body: JSON.stringify({ article: inputText.value }),
     });
 
-    // Parse the response and store the summary in the `summary` variable
-    const data = await response.json();
+    // Add a timeout check if the request is taking too long
+    const timeout = 10000;  // Timeout after 10 seconds
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject('Request timeout'), timeout)
+    );
+    
+    const data = await Promise.race([response.json(), timeoutPromise]);
     summary.value = data.summary;
   } catch (error) {
     console.error("Error fetching summary:", error);
+    summary.value = `Error: ${error}`;  // Show error message to the user
   }
 };
+
 </script>
 
 <template>
