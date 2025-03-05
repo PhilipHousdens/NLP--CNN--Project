@@ -1,0 +1,15 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - frontend
+
+  frontend:
+    build:
+      context: ./NLPProject
+    ports:
+      - "80:80"
