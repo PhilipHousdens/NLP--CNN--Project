@@ -1,3 +1,5 @@
 __pycache__
 
 .venv/
+
+app/models/summarization_model
