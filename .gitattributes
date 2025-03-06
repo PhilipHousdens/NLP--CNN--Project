@@ -1,1 +1,2 @@
 backend/app/models/model.pth filter=lfs diff=lfs merge=lfs -text
+backend/app/models/summarization_model/model.safetensors filter=lfs diff=lfs merge=lfs -text

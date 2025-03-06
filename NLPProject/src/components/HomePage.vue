@@ -1,47 +1,27 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from "vue";
+import axios from "axios";
 
-// Array to store names from the API
-const names = ref([]);
+const inputText = ref("");
+const summary = ref("");
+const loading = ref(false);
 
+const summarizeText = async () => {
+  if (!inputText.value) return;
 
-// Variables for text summarization
-const inputText = ref('');
-const summary = ref('');
+  loading.value = true;
+  summary.value = "";
 
-// Fetch names from FastAPI on mount
-onMounted(async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/summarize/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ article: inputText.value }),
+    const response = await axios.post("http://localhost:8000/summarize/", {
+      text: inputText.value,
     });
-
-    // Add a timeout check if the request is taking too long
-    const timeout = 10000;  // Timeout after 10 seconds
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject('Request timeout'), timeout)
-    );
-    
-    const data = await Promise.race([response.json(), timeoutPromise]);
-    summary.value = data.summary;
+    summary.value = response.data.summary;
   } catch (error) {
-    console.error("Error fetching summary:", error);
-    summary.value = `Error: ${error}`;  // Show error message to the user
+    summary.value = "Error: " + error.response?.data?.detail || error.message;
+  } finally {
+    loading.value = false;
   }
-});
-
-// Summarize the input text
-const summarizeText = () => {
-  if (inputText.value.trim() === '') {
-    alert('Please enter some text to summarize.');
-    return;
-  }
-  // Simple summarization: take first 100 characters
-  summary.value = inputText.value.slice(0, 100) + '...';
 };
 
 </script>
@@ -65,19 +45,11 @@ const summarizeText = () => {
     >
       Summarize
     </button>
-
+    
     <!-- Display Summary -->
     <div v-if="summary" class="mt-6 text-lg text-brown-800">
       <strong class="font-semibold">Summary:</strong>
       <p>{{ summary }}</p>
-    </div>
-
-    <!-- Display Names from the API -->
-    <div v-if="names.length" class="mt-8 text-lg text-brown-800">
-      <h2 class="text-2xl font-semibold mb-4">Names from Backend</h2>
-      <ul class="list-disc pl-6">
-        <li v-for="(name, index) in names" :key="index" class="mb-2 text-brown-600">{{ name }}</li>
-      </ul>
     </div>
   </div>
 </template>
